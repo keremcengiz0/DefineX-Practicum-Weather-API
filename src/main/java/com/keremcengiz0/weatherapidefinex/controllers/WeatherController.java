@@ -23,6 +23,8 @@ public class WeatherController {
         this.weatherService = weatherService;
     }
 
+
+    // These controllers send a request to the service to fetch the current weather condition.
     @PostMapping(value = "/current")
     public WeatherCurrentResponse getCurrentWeather(@RequestBody @Valid WeatherCurrentRequest weatherCurrentRequest) throws Exception {
         try {
@@ -37,6 +39,7 @@ public class WeatherController {
         }
     }
 
+    // These controllers send a request to the service to fetch the daily weather.
     @PostMapping(value = "/forecast")
     public ForecastResponse getForecastWeather(@RequestBody @Valid ForecastRequest forecastRequest) throws Exception {
         try {

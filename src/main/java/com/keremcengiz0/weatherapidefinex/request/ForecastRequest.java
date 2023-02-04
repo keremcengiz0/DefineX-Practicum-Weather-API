@@ -9,6 +9,8 @@ import javax.validation.constraints.*;
 @Setter
 public class ForecastRequest {
 
+    // We send requests using these variables when requesting daily weather information. Validations have been made.
+
     @Pattern(regexp = "^[a-zA-Z]+(?:[\\s-][a-zA-Z]+)*$", message = "Enter a valid city name")
     @NotBlank(message = "City name cannot be empty!")
     private String city;
