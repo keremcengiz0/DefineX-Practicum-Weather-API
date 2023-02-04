@@ -30,6 +30,7 @@ public class WeatherService {
     @Value("${API_URL}")
     private String API_URL;
 
+    // It is the function that brings instant weather data.
     public WeatherCurrentResponse getCurrentWeather(String city) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
         WeatherCurrentDTO weatherCurrentDTO = null;
@@ -71,10 +72,12 @@ public class WeatherService {
         return weatherCurrentResponse;
     }
 
+    //It is the function that returns daily weather data.
     public ForecastResponse getForecastWeather(String city, Integer days) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
         ForecastDTO forecastDTO = null;
 
+        // The request URL is created.
         String urlTemplate = UriComponentsBuilder.fromHttpUrl(API_URL + "/forecast.json")
                 .queryParam("key", "{key}")
                 .queryParam("q", "{q}")
@@ -84,6 +87,7 @@ public class WeatherService {
                 .encode()
                 .toUriString();
 
+        // Adds relevant data to the URL address.
         Map<String, String> params = new HashMap<>();
         params.put("key", API_KEY);
         params.put("q", city);
@@ -92,9 +96,12 @@ public class WeatherService {
         params.put("alerts","no");
 
         try {
+            //A request is made to the API and the data is passed to the forecastDTO object.
             forecastDTO = restTemplate.getForObject(urlTemplate, ForecastDTO.class, params);
         } catch (HttpClientErrorException e) {
             ErrorResponse errorResponse = new ObjectMapper().readValue(e.getResponseBodyAsString(), ErrorResponse.class);
+
+            // The 2008 error code indicates invalid api key. The 1006 error code indicates city not found.
             if (e.getStatusCode() == HttpStatus.FORBIDDEN && errorResponse.getError().getCode() == 2008 ) {
                 throw new InvalidApiKeyException();
             } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST && errorResponse.getError().getCode() == 1006) {
@@ -106,7 +113,9 @@ public class WeatherService {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String jsonInString = objectMapper.writeValueAsString(forecastDTO);
 
+        //We transferred the data to the object named forecastResponse using ObjectMapper.
         ForecastResponse forecastResponse = objectMapper.readValue(jsonInString, ForecastResponse.class);
+
         return forecastResponse;
     }
 }
